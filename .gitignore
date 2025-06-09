@@ -1,0 +1,35 @@
+<<<<<<< HEAD
+# Ignore large model files
+*.pt
+
+# Ignore temporary or compiled files
+__pycache__/
+*.pyc
+/app/temp/
+
+# Ignore document files
+*.txt
+!requirements.txt
+!Dockerfile.txt
+
+# Ignore frame files, videos and audios
+*.wmv
+*.mp4
+*.jpg
+*.jpeg
+*.png
+
+# Block logs or cache files
+*.log
+*.tmp
+*.bin
+.cache/
+
+# Ignore environment or OS-specific files
+.env
+.DS_Store
+=======
+
+
+>>>>>>> bca213b09fa90448d1153998b81aecdd32eccba0
+Thumbs.db
