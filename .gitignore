@@ -18,6 +18,7 @@ __pycache__/
 *.jpg
 *.jpeg
 *.png
+*.wav
 
 # Block logs or cache files
 *.log

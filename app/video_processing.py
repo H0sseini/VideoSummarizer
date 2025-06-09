@@ -4,11 +4,14 @@ import shutil
 import numpy as np
 
 class VideoProcessor:
-    def __init__(self, frame_folder="frames", interval_sec=5, scene_stability_sec=15, diff_threshold=30.0):
+    def __init__(self, frame_folder="./temp/frames", video_path = "./temp/video", 
+                 video_name="input_video.mp4", interval_sec=5, 
+                 scene_stability_sec=15, diff_threshold=30.0):
         self.frame_folder = frame_folder
         self.interval_sec = interval_sec
         self.scene_stability_sec = scene_stability_sec
         self.diff_threshold = diff_threshold
+        self.video_full_path = os.path.join(video_path, video_name)
 
         self._prepare_frame_folder()
 
@@ -24,8 +27,8 @@ class VideoProcessor:
         diff = cv2.absdiff(frame1_small, frame2_small)
         return np.mean(diff)
 
-    def extract_frames(self, video_path):
-        cap = cv2.VideoCapture(video_path)
+    def extract_frames(self):
+        cap = cv2.VideoCapture(self.video_full_path)
         fps = cap.get(cv2.CAP_PROP_FPS)
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         duration_sec = total_frames / fps

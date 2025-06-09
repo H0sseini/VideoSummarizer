@@ -1,2 +1,5 @@
 moviepy[optional]
 git+https://github.com/openai/whisper.git
+numpy
+opencv-python
+shutil
