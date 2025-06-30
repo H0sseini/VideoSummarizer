@@ -3,6 +3,7 @@ import os
 import shutil
 import numpy as np
 
+
 class VideoProcessor:
     def __init__(self, frame_folder="./temp/frames", video_path = "./temp/video", 
                  video_name="input_video.mp4", interval_sec=5, 
@@ -29,17 +30,23 @@ class VideoProcessor:
 
     def extract_frames(self):
         cap = cv2.VideoCapture(self.video_full_path)
-        fps = cap.get(cv2.CAP_PROP_FPS)
+        self.fps = cap.get(cv2.CAP_PROP_FPS)
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        duration_sec = total_frames / fps
+        duration_sec = total_frames / self.fps
 
-        interval_frames = int(self.interval_sec * fps)
-        stable_frames = int(self.scene_stability_sec * fps)
+        interval_frames = int(self.interval_sec * self.fps)
+        stable_frames = int(self.scene_stability_sec * self.fps)
 
         last_saved_frame = None
         last_saved_index = -stable_frames  # ensure the first frame is considered
         current_index = 0
-
+        
+        #cleaning all previous files
+        for filename in os.listdir(self.frame_folder):
+            file_path = os.path.join(self.frame_folder, filename)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+            
         while cap.isOpened():
             ret, frame = cap.read()
             if not ret:

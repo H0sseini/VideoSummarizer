@@ -71,7 +71,10 @@ class AudioProcessor:
         self.timing_text = []
         for seg in result['segments']:
             self.timing_text.append(f"[{seg['start']:.2f}s -> {seg['end']:.2f}s] {seg['text']}")
-            
+        #removing old files
+        os.remove(os.path.join(self.text_path, self.text_name))
+        os.remove(os.path.join(self.text_path, self.timing_name))
+        
         with open(os.path.join(self.text_path, self.text_name), "w", encoding="utf-8") as f:
             f.write(self.full_text)
         with open(os.path.join(self.text_path, self.timing_name), "w", encoding="utf-8") as f:

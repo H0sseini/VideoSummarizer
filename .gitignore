@@ -1,6 +1,8 @@
 <<<<<<< HEAD
 # Ignore large model files
 *.pt
+*.safetensors
+
 
 # Ignore temporary or compiled files
 __pycache__/
