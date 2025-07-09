@@ -140,7 +140,7 @@ class NarrativeGenerator:
                             summary_type="abstractive"):
         tool = SummarizationTool(model_path="./models/bart-large-cnn")
         text = self.load_narrative_text(confidence if confidence is not None else self.confidence)
-        return tool.summarize(text, mode, summary_type)
+        return text, tool.summarize(text, mode, summary_type)
     
     
     

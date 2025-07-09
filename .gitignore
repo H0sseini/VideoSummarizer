@@ -28,7 +28,7 @@ __pycache__/
 *.bin
 .cache/
 
-# Ignore environment or OS-specific files
+# Ignore environment or OS-specific files	
 .env
 .DS_Store
 =======

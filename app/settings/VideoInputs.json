@@ -1,0 +1,1 @@
+{"frame_folder": "./temp/frames", "video_path": "./temp/video", "video_name": "input_video.mp4", "interval_sec": 5, "scene_stability_sec": 15, "diff_threshold": 30.0}
