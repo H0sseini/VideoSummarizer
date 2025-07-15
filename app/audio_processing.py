@@ -64,16 +64,21 @@ class AudioProcessor:
         return model
 
     def transcribe_audio(self):
+        
         model = self.get_whisper_model()
         self.extract_audio()
+        print("\N{thinking face} Transcribing the extracted audio file...")
         result = model.transcribe(os.path.join(self.audio_path, self.audio_name))
         self.full_text = result['text']
         self.timing_text = []
         for seg in result['segments']:
             self.timing_text.append(f"[{seg['start']:.2f}s -> {seg['end']:.2f}s] {seg['text']}")
+        
         #removing old files
-        os.remove(os.path.join(self.text_path, self.text_name))
-        os.remove(os.path.join(self.text_path, self.timing_name))
+        if os.path.exists(os.path.join(self.text_path, self.text_name)):
+            os.remove(os.path.join(self.text_path, self.text_name))
+        if os.path.exists(os.path.join(self.text_path, self.timing_name)):
+            os.remove(os.path.join(self.text_path, self.timing_name))
         
         with open(os.path.join(self.text_path, self.text_name), "w", encoding="utf-8") as f:
             f.write(self.full_text)

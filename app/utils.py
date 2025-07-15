@@ -74,19 +74,19 @@ def load_defaults(path='./settings/defaults/'):
    
     return [AudioInputs, VideoInputs, FrameAlignInputs, NarrativeInputs]
 
-def write_inputs(path='./settings/'):
+def write_inputs(audio, video, frame, narrative, path='./settings/'):
     try:
         if not os.path.exists(path):
             os.makedirs(path)
     except Exception as e:
         print(f'{e} error: cannot create the folder: {path}')
     
-    [AudioInputs, VideoInputs, FrameAlignInputs, NarrativeInputs] = load_defaults()    
+       
     with open(os.path.join(path,'AudioInputs.json'), 'w') as file:
-        json.dump(AudioInputs, file)
+        json.dump(audio, file)
     with open(os.path.join(path,'VideoInputs.json'), 'w') as file:
-        json.dump(VideoInputs, file)
+        json.dump(video, file)
     with open(os.path.join(path,'FrameAlignInputs.json'), 'w') as file:
-        json.dump(FrameAlignInputs, file)
+        json.dump(frame, file)
     with open(os.path.join(path,'NarrativeInputs.json'), 'w') as file:
-        json.dump(NarrativeInputs, file)
+        json.dump(narrative, file)

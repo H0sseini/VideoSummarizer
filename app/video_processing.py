@@ -29,6 +29,7 @@ class VideoProcessor:
         return np.mean(diff)
 
     def extract_frames(self):
+        print("🖼️ extracting frames ...")
         cap = cv2.VideoCapture(self.video_full_path)
         self.fps = cap.get(cv2.CAP_PROP_FPS)
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))

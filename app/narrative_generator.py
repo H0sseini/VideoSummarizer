@@ -5,7 +5,7 @@ from transformers import Blip2Processor, Blip2ForConditionalGeneration
 import torch
 from utils import ensure_model
 import json
-from text_summarizer import SummarizationTool
+
 
 class NarrativeGenerator:
     def __init__(
@@ -118,9 +118,10 @@ class NarrativeGenerator:
             data = json.load(f)
     
         narrative_lines = []
+        confidence = self.confidence if self.confidence is not None else min_confidence
         for entry in data:
             score = float(entry.get("confidence_score", 1.0))
-            if score < min_confidence:
+            if score < confidence:
                 continue  # skip low confidence matches
     
             time_str = f"[{entry['start_time']}s → {entry['end_time']}s]"
@@ -135,12 +136,6 @@ class NarrativeGenerator:
     
         return "\n".join(narrative_lines)
     
-    def summarize_narrative(self, confidence=None, 
-                            mode="medium", 
-                            summary_type="abstractive"):
-        tool = SummarizationTool(model_path="./models/bart-large-cnn")
-        text = self.load_narrative_text(confidence if confidence is not None else self.confidence)
-        return text, tool.summarize(text, mode, summary_type)
     
     
     

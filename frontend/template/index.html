@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>🎬 Video Summarizer</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .hidden { display: none; }
+        .settings-group { margin-bottom: 1em; }
+        .settings-group label { display: inline-block; width: 200px; font-weight: bold; }
+        .settings-group input { width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>🎥 Video Summarizer</h1>
+
+    <form id="summary-form" enctype="multipart/form-data">
+        <label for="file">Upload Video:</label>
+        <input type="file" id="file" name="file" accept="video/*" required>
+
+        <button type="submit">▶️ Summarize</button>
+
+        <div id="loading" class="hidden">⏳ Processing video...</div>
+        <div id="error" class="hidden"></div>
+    </form>
+
+    <!-- 🔧 Advanced Settings -->
+    <button type="button" onclick="toggleSettings()">⚙️ Show/Hide Advanced Settings</button>
+    <div id="advanced-settings" class="hidden">
+        <h2>Advanced Settings</h2>
+        <form id="settings-form">
+
+            <fieldset>
+                <legend>🎧 Audio Settings</legend>
+                <div class="settings-group">
+                    <label for="audio-model-path">Model type:</label>
+                    <input type="text" id="audio-model" name="audio-model">
+					<script type="text/javascript">
+						document.getElementById('audio-model').value = 'whisper_models';
+					</script>
+                </div>
+                <div class="settings-group">
+                    <label for="audio-model-size">Model size:</label>
+					<select name="model-size" id="audio-model-size">
+						<option value="base">Base</option>
+						<option value="tiny">Tiny</option>
+						<option value="small">Small</option>
+						<option value="medium">Medium</option>
+						<option value="large">Large</option>
+						<option value="large-v1">Large v1.0</option>
+						<option value="large-v2">Large v2.0</option>
+						<option value="large-v3">Large v3.0</option>
+						<option value="large-v3-turbo">Large v3.0 Turbo</option>
+						<option value="turbo">Turbo</option>
+					</select>
+                </div>
+				<div class="settings-group">
+                    <label for="audio-path">Audio saving path:</label>
+                    <input type="text" id="audio-path" name="audio-path">
+					<script type="text/javascript">
+						document.getElementById('audio-path').value = './temp/audio';
+					</script>
+                </div>
+				<div class="settings-group">
+                    <label for="transcript-path">Transcripts saving path:</label>
+                    <input type="text" id="transcript-path" name="transcript-path">
+					<script type="text/javascript">
+						document.getElementById('transcript-path').value = './temp/transcripts';
+					</script>
+                </div>
+				
+            </fieldset>
+
+            <fieldset>
+                <legend>🎞️ Video Settings</legend>
+                <div class="settings-group">
+                    <label for="video-path">Video path:</label>
+                    <input type="text" id="video-path" name="video-path">
+					<script type="text/javascript">
+						document.getElementById('video-path').value = './temp/video';
+					</script>
+                </div>
+				<div class="settings-group">
+                    <label for="video-name">Video path:</label>
+                    <input type="text" id="video-name" name="video-name">
+					<script type="text/javascript">
+						document.getElementById('video-name').value = 'input_video.mp4';
+					</script>
+                </div>
+				<div class="settings-group">
+                    <label for="scene-stability">Scene stability (sec):</label>
+                    <input type="number" id="scene-stability" name="scene-stability">
+					<script type="text/javascript">
+						document.getElementById('scene-stability').value = 15.0;
+					</script>
+                </div>
+                <div class="settings-group">
+                    <label for="scene-threshold">Scene threshold (sec):</label>
+                    <input type="number" id="scene-threshold" name="scene_threshold">
+					<script type="text/javascript">
+						document.getElementById('scene-threshold').value = 30.0;
+					</script>
+                </div>
+				
+            </fieldset>
+
+            <fieldset>
+                <legend>🖼️ Frame Settings</legend>
+                <div class="settings-group">
+                    <label for="clip-model">CLIP Model:</label>
+                    <input type="text" id="clip-model" name="clip_model">
+					<script type="text/javascript">
+						document.getElementById('clip-model').value = 'clip-vit-base-patch32';
+					</script>
+                </div>
+                <div class="settings-group">
+                    <label for="blip-model">BLIP2 Model:</label>
+                    <input type="text" id="blip-model" name="blip_model">
+					<script type="text/javascript">
+						document.getElementById('blip-model').value = 'blip2-flan-t5-xl';
+					</script>
+                </div>
+				<div class="settings-group">
+                    <label for="frame-interval">Frame capturing interval (sec):</label>
+                    <input type="number" id="frame-interval" name="frame-interval">
+					<script type="text/javascript">
+						document.getElementById('frame-interval').value = 5.0;
+					</script>
+                </div>
+				<div class="settings-group">
+                    <label for="frame-path">Frame path:</label>
+                    <input type="text" id="frame-path" name="frame-path">
+					<script type="text/javascript">
+						document.getElementById('frame-path').value = './temp/frames';
+					</script>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>📜 Narrative Settings</legend>
+                <div class="settings-group">
+                    <label for="caption-threshold">Caption threshold:</label>
+                    <input type="number" step="0.01" id="caption-threshold" name="caption_threshold">
+					<script type="text/javascript">
+						document.getElementById('caption-threshold').value = 0.26;
+					</script>
+                </div>
+                <div class="settings-group">
+                    <label for="summary-mode">Summary mode:</label>
+                    <select name="summary-mode" id="summary-mode">
+						<option value="small">Small</option>
+						<option value="medium">Medium</option>
+						<option value="large">Large</option>
+					</select>
+                </div>
+            </fieldset>
+
+            <button type="submit">💾 Save Settings</button>
+        </form>
+    </div>
+
+    <!-- 📋 Results -->
+    <h2>🧾 Full Narrative</h2>
+    <textarea id="full-narrative" readonly rows="10"></textarea>
+
+    <h2>🧠 Summary</h2>
+    <textarea id="summary" readonly rows="8"></textarea>
+
+    <script>
+    function toggleSettings() {
+        const settings = document.getElementById("advanced-settings");
+        settings.classList.toggle("hidden");
+    }
+    </script>
+    <script src="/static/script.js"></script>
+</body>
+</html>
