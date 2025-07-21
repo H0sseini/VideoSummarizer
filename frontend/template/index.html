@@ -14,7 +14,7 @@
 <body>
     <h1>🎥 Video Summarizer</h1>
 
-    <form id="summary-form" enctype="multipart/form-data">
+    <form id="summary-form" method="post" enctype="multipart/form-data">
         <label for="file">Upload Video:</label>
         <input type="file" id="file" name="file" accept="video/*" required>
 
@@ -161,11 +161,13 @@
 
     <!-- 📋 Results -->
     <h2>🧾 Full Narrative</h2>
-    <textarea id="full-narrative" readonly rows="10"></textarea>
+	<textarea id="full-narrative" readonly rows="10">{{ full_text or '' }}</textarea>
+    
 
-    <h2>🧠 Summary</h2>
-    <textarea id="summary" readonly rows="8"></textarea>
-
+    {% if result %}
+	<h2>🧠 Summary</h2>
+    <textarea id="summary" readonly rows="8">{{ result }}</textarea>
+	{% endif %}
     <script>
     function toggleSettings() {
         const settings = document.getElementById("advanced-settings");

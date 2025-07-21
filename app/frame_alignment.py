@@ -5,20 +5,20 @@ from tqdm import tqdm
 import torch
 from sklearn.metrics.pairwise import cosine_similarity
 from transformers import CLIPProcessor, CLIPModel, Blip2Processor, Blip2ForConditionalGeneration
-from utils import ensure_model
+from app.utils import ensure_model
 
 class FrameTextAligner:
     def __init__(
         self,
         clip_model_id="openai/clip-vit-base-patch32",
-        clip_model_path="./models/clip-vit-base-patch32",
-        clip_proc_path="./models/clip-vit-base-patch32-processor",
+        clip_model_path="./app/models/clip-vit-base-patch32",
+        clip_proc_path="./app/models/clip-vit-base-patch32-processor",
         blip_model_id="Salesforce/blip2-flan-t5-xl",
-        blip_model_path="./models/blip2-flan-t5-xl-model",
-        blip_proc_path="./models/blip2-flan-t5-xl-processor",
-        transcript_path="./temp/transcripts/timed_transcript.txt",
-        frame_folder="./temp/frames",
-        output_path="./temp/transcripts/frame_text_alignment.txt"
+        blip_model_path="./app/models/blip2-flan-t5-xl-model",
+        blip_proc_path="./app/models/blip2-flan-t5-xl-processor",
+        transcript_path="./app/temp/transcripts/timed_transcript.txt",
+        frame_folder="./app/temp/frames",
+        output_path="./app/temp/transcripts/frame_text_alignment.txt"
     ):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.torch_dtype = torch.float16 if self.device == "cuda" else torch.float32

@@ -4,13 +4,13 @@ Created on Mon Jul  7 08:47:42 2025
 
 @author: H0sseini
 """
-import json, os
-from video_processing import VideoProcessor
-from audio_processing import AudioProcessor
-from frame_alignment import FrameTextAligner
-from narrative_generator import NarrativeGenerator
-from text_summarizer import SummarizationTool
-from utils import load_defaults, write_inputs
+import json, os, re
+from app.video_processing import VideoProcessor
+from app.audio_processing import AudioProcessor
+from app.frame_alignment import FrameTextAligner
+from app.narrative_generator import NarrativeGenerator
+from app.text_summarizer import SummarizationTool
+from app.utils import load_defaults, write_inputs
 
  
     
@@ -39,7 +39,7 @@ def restore_defaults(restore_path="./settings/defaults/", path="./settings/"):
      except Exception as e:
         print(f"{e} error: cannot restore defaults.")
 
-def summarize_video(mode="medium",summary_type="abstractive", path='./settings/'):
+def summarize_video(mode="medium",summary_type="abstractive", path='./app/settings/'):
     [audio_settings, video_settings, frame_settings, narrative_settings] = load_defaults(path)
     myAudio = AudioProcessor(**audio_settings)
     myVideo = VideoProcessor(**video_settings)
@@ -49,10 +49,23 @@ def summarize_video(mode="medium",summary_type="abstractive", path='./settings/'
     text, timining = myAudio.transcribe_audio()
     myVideo.extract_frames()
     myFrame.align_frames_with_text()
-    myText = SummarizationTool(model_path="./models/bart-large-cnn")
+    myText = SummarizationTool(model_path="./app/models/bart-large-cnn")
     myNarrative = NarrativeGenerator(**narrative_settings)
     text = myNarrative.load_narrative_text()
     results = myText.summarize(text, mode, summary_type)
+    # creating full_text
+    matches = re.findall(r'\(\s*(.*?)\s*\)', text)
+
+    # Remove consecutive duplicates
+    unique_lines = []
+    prev = None
+    for line in matches:
+        if line != prev:
+            unique_lines.append(line)
+            prev = line
+
+    # Join all texts
+    result = " ".join(unique_lines)
     print("Deleting temporary files ...")
     for files in os.listdir(video_settings["video_path"]):
         os.remove(os.path.join(video_settings["video_path"], files))
@@ -62,7 +75,7 @@ def summarize_video(mode="medium",summary_type="abstractive", path='./settings/'
             os.remove(os.path.join(audio_settings["text_path"], files))
     for files in os.listdir(frame_settings["frame_folder"]):
             os.remove(os.path.join(frame_settings["frame_folder"], files))
-    return results
+    return result, results
     
     
     

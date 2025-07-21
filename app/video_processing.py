@@ -5,7 +5,7 @@ import numpy as np
 
 
 class VideoProcessor:
-    def __init__(self, frame_folder="./temp/frames", video_path = "./temp/video", 
+    def __init__(self, frame_folder="./app/temp/frames", video_path = "./app/temp/video", 
                  video_name="input_video.mp4", interval_sec=5, 
                  scene_stability_sec=15, diff_threshold=30.0):
         self.frame_folder = frame_folder

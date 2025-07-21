@@ -9,3 +9,6 @@ transformers
 tqdm
 pillow
 scikit-learn
+traceback
+shutil
+re

@@ -3,7 +3,7 @@ from PIL import Image
 from tqdm import tqdm
 from transformers import Blip2Processor, Blip2ForConditionalGeneration
 import torch
-from utils import ensure_model
+from app.utils import ensure_model
 import json
 
 
@@ -11,14 +11,14 @@ class NarrativeGenerator:
     def __init__(
         self,
         confidence = 0.26,
-        frames_dir="./temp/frames",
-        alignment_file="./temp/transcripts/frame_text_alignment.txt",
-        output_file="./temp/transcripts/narrative.txt",
-        blip_model_path="./models/blip2-flan-t5-xl-model",
-        blip_processor_path="./models/blip2-flan-t5-xl-processor",
+        frames_dir="./app/temp/frames",
+        alignment_file="./app/temp/transcripts/frame_text_alignment.txt",
+        output_file="./app/temp/transcripts/narrative.txt",
+        blip_model_path="./app/models/blip2-flan-t5-xl-model",
+        blip_processor_path="./app/models/blip2-flan-t5-xl-processor",
         model_id="Salesforce/blip2-flan-t5-xl",
         fps = 1,
-        json_path = "./temp/transcripts/frame_narrative_data.json"
+        json_path = "./app/temp/transcripts/frame_narrative_data.json"
     ):
         self.confidence = confidence
         self.frames_dir = frames_dir

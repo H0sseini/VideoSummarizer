@@ -5,10 +5,10 @@ import whisper
 
 
 class AudioProcessor:
-    def __init__(self, model_dir="./models/whisper_models",
-                 model_size = "base", video_path="./temp/video",video_name="input_video.mp4",
-                 audio_path = "./temp/audio", audio_name="extracted_audio.wav", 
-                 text_path = "./temp/transcripts",
+    def __init__(self, model_dir="./app/models/whisper_models",
+                 model_size = "base", video_path="./app/temp/video",video_name="input_video.mp4",
+                 audio_path = "./app/temp/audio", audio_name="extracted_audio.wav", 
+                 text_path = "./app/temp/transcripts",
                  text_name="full_text.txt", timing_name="timed_transcript.txt"):
         
             

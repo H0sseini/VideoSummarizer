@@ -74,7 +74,7 @@ def load_defaults(path='./settings/defaults/'):
    
     return [AudioInputs, VideoInputs, FrameAlignInputs, NarrativeInputs]
 
-def write_inputs(audio, video, frame, narrative, path='./settings/'):
+def write_inputs(audio, video, frame, narrative, path='./app/settings/'):
     try:
         if not os.path.exists(path):
             os.makedirs(path)
