@@ -11,31 +11,33 @@ class NarrativeGenerator:
     def __init__(
         self,
         confidence = 0.26,
-        frames_dir="./app/temp/frames",
-        alignment_file="./app/temp/transcripts/frame_text_alignment.txt",
-        output_file="./app/temp/transcripts/narrative.txt",
-        blip_model_path="./app/models/blip2-flan-t5-xl-model",
-        blip_processor_path="./app/models/blip2-flan-t5-xl-processor",
         model_id="Salesforce/blip2-flan-t5-xl",
         fps = 1,
-        json_path = "./app/temp/transcripts/frame_narrative_data.json"
+        summary_mode = "medium"
     ):
         self.confidence = confidence
-        self.frames_dir = frames_dir
-        self.alignment_file = alignment_file
-        self.output_file = output_file
+        self.frames_dir = "./app/temp/frames"
+        self.alignment_file = "./app/temp/transcripts/frame_text_alignment.txt"
+        self.output_file = "./app/temp/transcripts/narrative.txt"
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.dtype = torch.float16 if torch.cuda.is_available() else torch.float32
         self.fps = fps #frame rate of the video
-        self.json_path = json_path
+        self.json_path = "./app/temp/transcripts/frame_narrative_data.json"
 
         # Load BLIP2 model and processor
+        blip_model_loc = model_id.replace(model_id[:model_id.find("/")],
+                                                "./app/models")
+        blip_model_path = blip_model_loc + "-model"
+        blip_processor_path = blip_model_loc + "-processor"
+        
         self.processor = ensure_model(blip_processor_path, model_id, Blip2Processor)
         self.model = ensure_model(blip_model_path, model_id, Blip2ForConditionalGeneration, torch_dtype=self.dtype)
         self.model.to(self.device)
 
         # Load frame ↔ transcript alignment data
         self.frame_text_map = self._load_alignment_file()
+        
+        self.summary_mode = summary_mode
 
     def _load_alignment_file(self):
         mapping = {}

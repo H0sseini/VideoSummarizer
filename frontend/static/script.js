@@ -1,77 +1,106 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('summary-form');
-    const loadingBox = document.getElementById('loading');
-    const errorBox = document.getElementById('error');
-    const fullNarrativeText = document.getElementById('narrativeText');
-    const summarizedText = document.getElementById('summaryText');
-    const copyButtons = document.querySelectorAll('.copyBtn');
-    const advancedToggle = document.getElementById('advanced-toggle');
-    const advancedSection = document.getElementById('advanced-section');
+document.getElementById("summarizeForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const fileInput = this.querySelector("input[type='file']");
+    const file = fileInput.files[0];
+	const summarizeButton = document.getElementById("submitting");
+	const toggleSettingsButton = document.getElementById("toggleSettings");
+    if (!file) return;
+
+    document.getElementById("fullNarrative").value = "⏳ Summarizing, please wait...";
+    document.getElementById("summaryText").value = "⏳ Summarizing, please wait...";
 	
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    
+	summarizeButton.disabled = true;
+	toggleSettingsButton.disabled = true;
+
+	try {
+		const response = await fetch("/summarize", {
+			method: "POST",
+			body: formData,
+		});
 	
-	document.getElementById('video-path').value = './temp/video';
-    // Toggle advanced settings
-    advancedToggle.addEventListener('click', () => {
-        advancedSection.classList.toggle('hidden');
-        advancedToggle.textContent = advancedSection.classList.contains('hidden') ? "Show Advanced Settings" : "Hide Advanced Settings";
-    });
+		const result = await response.json();
+	
+		if (result.status === "success") {
+			document.getElementById("summary_textarea").value = result.summary;
+			document.getElementById("full_textarea").value = result.fullNarrative;
+		} else {
+			document.getElementById("summary_textarea").value = "⚠️ An error occurred.";
+			document.getElementById("full_textarea").value = result.message + "\n\n" + result.traceback;
+		}
+	
+	} catch (err) {
+		document.getElementById("summary_textarea").value = "⚠️ An error occurred.";
+		document.getElementById("full_textarea").value = err.message;
+	} finally {
+		summarizeButton.disabled = false;
+		toggleSettingsButton.disabled = false;
+	}
+	
+});
 
-    // Handle form submit
-    form.addEventListener('submit', async function (e) {
-        e.preventDefault();
-        loadingBox.classList.remove('hidden');
-        errorBox.classList.add('hidden');
-        fullNarrativeText.value = "Loading results...";
-        summarizedText.value = "";
+document.getElementById("toggleSettings").addEventListener("click", async function () {
+    const settingsDiv = document.getElementById("settingsSection");
 
-        const fileInput = document.getElementById('file');
-        const file = fileInput.files[0];
-        if (!file) {
-            loadingBox.classList.add('hidden');
-            errorBox.textContent = "❗ Please upload a video file.";
-            errorBox.classList.remove('hidden');
-            return;
-        }
+    // Toggle visibility
+    settingsDiv.style.display = settingsDiv.style.display === "none" ? "block" : "none";
 
-        const formData = new FormData();
-        formData.append('file', file);
-
-        // Append advanced settings
-        ["audio", "video", "frame", "narrative"].forEach(section => {
-            const input = document.getElementById(`${section}-settings`);
-            formData.append(`${section}_settings`, input.value);
-        });
-
+    // If now visible, fetch and populate settings
+    if (settingsDiv.style.display === "block") {
         try {
-            const response = await fetch("/summarize", {
-                method: "POST",
-                body: formData
-            });
+            const response = await fetch("/read_settings");
+            const settings = await response.json();
 
-            const html = await response.text();
-            document.open();
-            document.write(html);
-            document.close();
-        } catch (error) {
-            loadingBox.classList.add('hidden');
-            errorBox.textContent = "⚠️ Internal server error or connection failed.";
-            errorBox.classList.remove('hidden');
-        }
-    });
-
-    // Copy to clipboard buttons
-    copyButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const targetId = btn.dataset.target;
-            const textarea = document.getElementById(targetId);
-            if (textarea) {
-                navigator.clipboard.writeText(textarea.value).then(() => {
-                    btn.textContent = "✅ Copied!";
-                    setTimeout(() => btn.textContent = "Copy to Clipboard", 2000);
-                }).catch(err => {
-                    alert("Copy failed: " + err);
-                });
+            for (const [section, values] of Object.entries(settings)) {
+                for (const [key, val] of Object.entries(values)) {
+                    const inputElement = document.getElementById(`${section}_${key}`);
+                    if (inputElement) {
+                        inputElement.value = val;
+                    } else {
+                        console.warn(`⚠️ No input field found for: ${section}_${key}`);
+                    }
+                }
             }
-        });
+        } catch (err) {
+            console.error("❌ Failed to load settings:", err);
+        }
+    }
+});
+
+
+document.getElementById("restoreDefaults").addEventListener("click", async function () {
+    await fetch("/restore_defaults", { method: "POST" });
+    alert("🔄 Defaults restored!");
+});
+
+document.getElementById("saveSettings").addEventListener("click", async function () {
+    const data = {
+        audio: {
+            language: document.getElementById("audio_language").value,
+            model_size: document.getElementById("audio_model_size").value
+        },
+        video: {
+            frame_interval: parseFloat(document.getElementById("video_frame_interval").value),
+            scene_threshold: parseFloat(document.getElementById("video_scene_threshold").value)
+        },
+        frame: {
+            use_clip: document.getElementById("frame_use_clip").checked
+        },
+        narrative: {
+            caption_threshold: parseFloat(document.getElementById("narrative_threshold").value)
+        }
+    };
+
+    await fetch("/modify_inputs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
     });
+
+    document.getElementById("settingsSection").style.display = "none";
 });

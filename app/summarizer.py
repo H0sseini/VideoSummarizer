@@ -39,7 +39,7 @@ def restore_defaults(restore_path="./settings/defaults/", path="./settings/"):
      except Exception as e:
         print(f"{e} error: cannot restore defaults.")
 
-def summarize_video(mode="medium",summary_type="abstractive", path='./app/settings/'):
+def summarize_video(mode="detailed",summary_type="abstractive", path='./app/settings/'):
     [audio_settings, video_settings, frame_settings, narrative_settings] = load_defaults(path)
     myAudio = AudioProcessor(**audio_settings)
     myVideo = VideoProcessor(**video_settings)
@@ -52,7 +52,8 @@ def summarize_video(mode="medium",summary_type="abstractive", path='./app/settin
     myText = SummarizationTool(model_path="./app/models/bart-large-cnn")
     myNarrative = NarrativeGenerator(**narrative_settings)
     text = myNarrative.load_narrative_text()
-    results = myText.summarize(text, mode, summary_type)
+    summary_mode = myNarrative.summary_mode if myNarrative.summary_mode is not None else mode
+    summary = myText.summarize(text, summary_mode, summary_type)
     # creating full_text
     matches = re.findall(r'\(\s*(.*?)\s*\)', text)
 
@@ -65,19 +66,23 @@ def summarize_video(mode="medium",summary_type="abstractive", path='./app/settin
             prev = line
 
     # Join all texts
-    result = " ".join(unique_lines)
+    full_text = " ".join(unique_lines)
     print("Deleting temporary files ...")
-    for files in os.listdir(video_settings["video_path"]):
-        os.remove(os.path.join(video_settings["video_path"], files))
-    for files in os.listdir(audio_settings["audio_path"]):
-            os.remove(os.path.join(audio_settings["audio_path"], files))
-    for files in os.listdir(audio_settings["text_path"]):
-            os.remove(os.path.join(audio_settings["text_path"], files))
-    for files in os.listdir(frame_settings["frame_folder"]):
-            os.remove(os.path.join(frame_settings["frame_folder"], files))
-    return result, results
+    for files in os.listdir("./app/temp/video"):
+        os.remove(os.path.join("video_path", files))
+    for files in os.listdir("./app/temp/audio"):
+            os.remove(os.path.join("./app/temp/audio", files))
+    for files in os.listdir("./app/temp/frames"):
+            os.remove(os.path.join("./app/temp/frames", files))
+    for files in os.listdir("./app/temp/transcript"):
+            os.remove(os.path.join("./app/temp/transcript", files))
+    return full_text, summary
+
+def reading_inputs(path="./app/settings/"):
+    [audio_settings, video_settings, frame_settings, narrative_settings] = load_defaults(path)
     
     
+    return
     
     
 

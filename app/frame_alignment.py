@@ -1,4 +1,4 @@
-
+    
 import os
 from PIL import Image
 from tqdm import tqdm
@@ -11,27 +11,31 @@ class FrameTextAligner:
     def __init__(
         self,
         clip_model_id="openai/clip-vit-base-patch32",
-        clip_model_path="./app/models/clip-vit-base-patch32",
-        clip_proc_path="./app/models/clip-vit-base-patch32-processor",
-        blip_model_id="Salesforce/blip2-flan-t5-xl",
-        blip_model_path="./app/models/blip2-flan-t5-xl-model",
-        blip_proc_path="./app/models/blip2-flan-t5-xl-processor",
-        transcript_path="./app/temp/transcripts/timed_transcript.txt",
-        frame_folder="./app/temp/frames",
-        output_path="./app/temp/transcripts/frame_text_alignment.txt"
+        blip_model_id="Salesforce/blip2-flan-t5-xl"
     ):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.torch_dtype = torch.float16 if self.device == "cuda" else torch.float32
 
+        
+        clip_model_path = clip_model_id.replace(clip_model_id[:clip_model_id.find("/")],
+                                                "./app/models")
+        
+        clip_proc_path = clip_model_path + "-processor"
         self.clip_model = ensure_model(clip_model_path, clip_model_id, CLIPModel).to(self.device)
         self.clip_processor = ensure_model(clip_proc_path, clip_model_id, CLIPProcessor)
 
+        
+        blip_model_path = blip_model_id.replace(blip_model_id[:blip_model_id.find("/")],
+                                                "./app/models")
+        blip_proc_path = blip_model_path + "-processor"
+        blip_model_path = blip_model_path + "-model"
+        
         self.blip_model = ensure_model(blip_model_path, blip_model_id, Blip2ForConditionalGeneration, torch_dtype=self.torch_dtype)
         self.blip_processor = ensure_model(blip_proc_path, blip_model_id, Blip2Processor)
 
-        self.transcript_path = transcript_path
-        self.frame_folder = frame_folder
-        self.output_path = output_path
+        self.transcript_path = "./app/temp/transcripts/timed_transcript.txt"
+        self.frame_folder = "./app/temp/frames"
+        self.output_path = "./app/temp/transcripts/frame_text_alignment.txt"
 
     def load_transcript(self):
         with open(self.transcript_path, "r", encoding="utf-8") as f:

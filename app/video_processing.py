@@ -5,14 +5,13 @@ import numpy as np
 
 
 class VideoProcessor:
-    def __init__(self, frame_folder="./app/temp/frames", video_path = "./app/temp/video", 
-                 video_name="input_video.mp4", interval_sec=5, 
-                 scene_stability_sec=15, diff_threshold=30.0):
-        self.frame_folder = frame_folder
+    def __init__(self, interval_sec=5, scene_stability_sec=15, 
+                 diff_threshold=30.0):
+        self.frame_folder = "./app/temp/frames"
         self.interval_sec = interval_sec
         self.scene_stability_sec = scene_stability_sec
         self.diff_threshold = diff_threshold
-        self.video_full_path = os.path.join(video_path, video_name)
+        self.video_full_path = os.path.join("./app/temp/video", "input_video.mp4")
 
         self._prepare_frame_folder()
 

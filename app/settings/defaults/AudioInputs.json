@@ -1,1 +1,1 @@
-{"model_dir": "./models/whisper_models", "model_size": "base", "video_path": "./temp/video", "video_name": "input_video.mp4", "audio_path": "./temp/audio", "audio_name": "extracted_audio.wav", "text_path": "./temp/transcripts", "text_name": "full_text.txt", "timing_name": "timed_transcript.txt"}
+{"audio_model": "whisper_models", "model_size": "base"}

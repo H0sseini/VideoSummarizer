@@ -6,13 +6,15 @@ Created on Wed Jul 16 09:06:15 2025
 """
 
 from fastapi import FastAPI, Request, Form, UploadFile, File
-from fastapi.responses import HTMLResponse
+from fastapi.responses import  JSONResponse, HTMLResponse 
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.summarizer import summarize_video
 import os
 import shutil
+from app.utils import load_defaults
+import traceback
 
 app = FastAPI()
 
@@ -32,34 +34,50 @@ app.add_middleware(
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "result": None, "full_text": None, "error": None})
 
-@app.post("/", response_class=HTMLResponse)
+@app.post("/summarize", response_class=JSONResponse)
 async def summarize(
     request: Request,
-    mode: str = Form("medium"),
-    summary_type: str = Form("abstractive"),
-    text_input: str = Form(None),
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
 ):
     try:
         video_path = "./app/temp/video/input_video.mp4"
         with open(video_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        full_text, result = summarize_video(mode=mode, summary_type=summary_type, path='./app/settings/')
+        full_text, summary = summarize_video(path='./app/settings/')
 
-        return templates.TemplateResponse("index.html", {
-            "request": request,
-            "result": result,
-            "full_text": full_text,
-            "error": None
+        return JSONResponse({
+            "status": "success",
+            "summary": summary,
+            "fullNarrative": full_text
         })
     except Exception as e:
-        import traceback
+        
         error_message = f"Error: {str(e)}\n{traceback.format_exc()}"
         print(error_message)
-        return templates.TemplateResponse("index.html", {
-            "request": request,
-            "result": None,
-            "full_text": None,
-            "error": str(e)
-        })
+        return JSONResponse({
+            "status": "error",
+            "message": str(e),
+            "traceback": traceback.format_exc()
+            }, status_code=500)
+    
+@app.get("/read_settings")
+async def read_current_settings():
+    try:
+        audio, video, frame, narrative = load_defaults("./app/settings/")
+        settings={
+            "audio": audio,
+            "video": video,
+            "frame": frame,
+            "narrative": narrative
+            }
+        return settings
+    
+    except Exception as e:
+       error_message = f"❌ Failed to read settings: {str(e)}"
+       print(error_message)
+       print(traceback.format_exc())  # Show full traceback
+       return JSONResponse(
+            content={"error": f"Failed to read settings: {str(e)}"},
+            status_code=500
+        ) 
