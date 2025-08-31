@@ -1,4 +1,3 @@
-```yaml
 name: VideoSummarizer CI
 
 on:
@@ -68,4 +67,3 @@ jobs:
         curl --fail http://localhost:8000 || exit 1
       env:
         PYTHONPATH: .
-```
