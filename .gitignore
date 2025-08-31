@@ -13,6 +13,7 @@ __pycache__/
 *.txt
 !requirements.txt
 !Dockerfile.txt
+!README.md
 
 # Ignore frame files, videos and audios
 *.wmv
