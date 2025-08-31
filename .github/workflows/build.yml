@@ -42,7 +42,7 @@ jobs:
     # Download pre-trained BART model
     - name: Download BART-large-CNN model
       run: |
-        python text_summarizer.py
+        python ./app/text_summarizer.py
       env:
         PYTHONPATH: .
 
