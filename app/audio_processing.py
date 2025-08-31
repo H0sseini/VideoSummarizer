@@ -64,7 +64,7 @@ class AudioProcessor:
         
         model = self.get_whisper_model()
         self.extract_audio()
-        print("\N{thinking face} Transcribing the extracted audio file...")
+        print("🎵 Transcribing the extracted audio file...")
         result = model.transcribe(os.path.join(self.audio_path, self.audio_name))
         self.full_text = result['text']
         self.timing_text = []

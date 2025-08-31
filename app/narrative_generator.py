@@ -64,7 +64,7 @@ class NarrativeGenerator:
         frame_files = sorted([f for f in os.listdir(self.frames_dir) if f.endswith(".jpg")])
         
         caption_counter = 0
-        for frame_file in tqdm(frame_files, desc="🖼️ Generating narrative"):
+        for frame_file in tqdm(frame_files, desc="🌱 Generating narrative"):
             img_path = os.path.join(self.frames_dir, frame_file)
             image = Image.open(img_path).convert("RGB")
 

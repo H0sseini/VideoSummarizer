@@ -1,1 +1,4 @@
-{"audio_model": "whisper_models", "model_size": "base"}
+{
+    "audio_model": "whisper_models",
+    "model_size": "base"
+}

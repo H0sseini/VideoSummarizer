@@ -5,21 +5,21 @@ Created on Wed Jul 16 09:06:15 2025
 @author: Mehdi
 """
 
-from fastapi import FastAPI, Request, Form, UploadFile, File
+from fastapi import FastAPI, Request, Form, UploadFile, File, HTTPException
 from fastapi.responses import  JSONResponse, HTMLResponse 
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.summarizer import summarize_video
-import os
-import shutil
-from app.utils import load_defaults
-import traceback
+import os, shutil, json, traceback
+from app.utils import load_defaults, write_inputs_from_combined, restore_defaults
+
+
 
 app = FastAPI()
 
 templates = Jinja2Templates(directory="frontend/template")
-app.mount("/static", StaticFiles(directory="./frontend/static"), name="static")
+app.mount("/static", StaticFiles(directory="./frontend/template/static"), name="static")
 
 # Enable CORS for testing
 app.add_middleware(
@@ -44,11 +44,11 @@ async def summarize(
         with open(video_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        full_text, summary = summarize_video(path='./app/settings/')
+        full_text, summary = summarize_video()
 
         return JSONResponse({
             "status": "success",
-            "summary": summary,
+            "summary_text": summary,
             "fullNarrative": full_text
         })
     except Exception as e:
@@ -81,3 +81,44 @@ async def read_current_settings():
             content={"error": f"Failed to read settings: {str(e)}"},
             status_code=500
         ) 
+
+@app.post("/write_inputs")
+async def write_inputs_endpoint(request: Request):
+    try:
+        settings = await request.json()
+        return write_inputs_from_combined(settings)
+    except Exception as e:
+        return JSONResponse(
+            content={"status": "error", "message": str(e)},
+            status_code=500
+        )
+    
+@app.post("/restore_defaults")
+async def restore_defaults_route():
+    return restore_defaults()
+
+@app.get("/read_settings")
+async def read_settings_route():
+    print("kir")
+    settings_path = "./app/settings/"
+    files = {
+        "audio": "AudioInputs.json",
+        "video": "VideoInputs.json",
+        "frame": "FrameAlignInputs.json",
+        "narrative": "NarrativeInputs.json"
+    }
+
+    settings_data = {}
+    try:
+        for key, filename in files.items():
+            file_path = os.path.join(settings_path, filename)
+            if os.path.exists(file_path):
+                with open(file_path, "r", encoding="utf-8") as f:
+                    settings_data[key] = json.load(f)
+                    print(settings_data)
+            else:
+                settings_data[key] = {}  # empty if not found
+        return {"status": "success", "settings": settings_data}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error reading settings: {str(e)}")

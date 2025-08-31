@@ -1,1 +1,5 @@
-{"interval_sec": 5, "scene_stability_sec": 15, "diff_threshold": 30.0}
+{
+    "interval_sec": 5,
+    "scene_stability_sec": 15,
+    "diff_threshold": "30"
+}

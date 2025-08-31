@@ -1,1 +1,1 @@
-{"confidence": 0.26, "model_id": "Salesforce/blip2-flan-t5-xl", "fps": 1}
+{"confidence": 0.26, "model_id": "Salesforce/blip2-flan-t5-xl", "fps": 1, "summary_mode": "medium"}
