@@ -28,9 +28,10 @@ VideoSummarizer is a tool that generates concise text summaries from videos by c
 3. **Download Pre-trained Model (Automatic)**:
    The tool uses the `facebook/bart-large-cnn` model for summarization. The tool also uses `whisper-models` for transcribing audio, `clip` model for the alignment of frames with texts, and `blip` model for the generation of narratives. 
    There is no need to download these models manually; the app will download the necessary models during the first summarization and store them in the `./app/models/` folder.
-   Warning: You may need to download around 12.5 GB of data during the first usage.
 
-4. **Install NLTK Data**:
+   *Warning*: You may need to download around 12.5 GB of data during the first usage.
+
+5. **Install NLTK Data**:
    The tool requires NLTK’s `punkt` tokenizer. Install it with:
    ```bash
    python -c "import nltk; nltk.download('punkt')"
