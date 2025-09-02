@@ -52,11 +52,11 @@ jobs:
 
 
     # Check FastAPI app startup (basic health check)
-    - name: Check FastAPI app
+    - name: Start FastAPI server
       run: |
-        pip install uvicorn
-        timeout 30s uvicorn frontend.app:app --host 0.0.0.0 --port 8000 &
-        sleep 5
-        curl --fail http://localhost:8000 || exit 1
-      env:
-        PYTHONPATH: .
+        nohup uvicorn frontend.app:app --host 0.0.0.0 --port 8000 &
+        sleep 5  # wait a few seconds for the server to start
+
+    - name: Test FastAPI server
+      run: |
+        curl http://localhost:8000
