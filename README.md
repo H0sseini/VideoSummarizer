@@ -26,13 +26,8 @@ VideoSummarizer is a tool that generates concise text summaries from videos by c
    *Note*: Requirements include `fastapi`, `uvicorn`, `torch`, `transformers`, `pymupdf`, `python-docx`, and others. Check `requirements.txt` for the full list.
 
 3. **Download Pre-trained Model (Automatic)**:
-   The tool uses the `facebook/bart-large-cnn` model for summarization. Run the following to download it:
-   ```bash
-   python text_summarizer.py
-   ```
-   This downloads the model to `./app/models/bart-large-cnn`.
-   The tool also uses `whisper-models` for transcribing audio, `clip` model for the alignment of frames with texts, and `blip` model for generation of narratives. 
-   There is no need to download these models manually, the app will download necessary models during the first summariztion and stores them in the `./app/models/` folder.
+   The tool uses the `facebook/bart-large-cnn` model for summarization. The tool also uses `whisper-models` for transcribing audio, `clip` model for the alignment of frames with texts, and `blip` model for the generation of narratives. 
+   There is no need to download these models manually; the app will download the necessary models during the first summarization and store them in the `./app/models/` folder.
    Warning: You may need to download around 12.5 GB of data during the first usage.
 
 4. **Install NLTK Data**:
@@ -40,7 +35,7 @@ VideoSummarizer is a tool that generates concise text summaries from videos by c
    ```bash
    python -c "import nltk; nltk.download('punkt')"
    ```
-   Again, the app downloads and installs the necessary files and there is no need to use the manual method.
+   Again, the app downloads and installs the necessary files, and there is no need to use the manual method.
 
 ## Usage
 
@@ -50,7 +45,7 @@ VideoSummarizer is a tool that generates concise text summaries from videos by c
    ```bash
    uvicorn frontend.app:app --host 0.0.0.0 --port 8000
    ```
-   Or, use Python if you didnn't install uvicorn:
+   Or, use Python if you didn't install uvicorn:
    ```bash
    python -m uvicorn frontend.app:app --host 0.0.0.0 --port 8000
    ```
@@ -60,7 +55,7 @@ VideoSummarizer is a tool that generates concise text summaries from videos by c
    Open your browser and navigate to `http://localhost:8000`. The interface allows you to:
    - Upload a video file (e.g., MP4, AVI).
    - View or copy the generated narrative and summary.
-   - Change settings of the app.
+   - Change the settings of the app.
 
 3. **Interact with the GUI**:
    Follow the on-screen instructions to upload a video, configure settings, and generate summaries.
