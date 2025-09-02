@@ -40,7 +40,6 @@ VideoSummarizer is a tool that generates concise text summaries from videos by c
 
 ## Usage
 
-### Via GUI (Recommended)
 1. **Launch the GUI**:
    Start the FastAPI server with Uvicorn to access the web-based interface:
    ```bash
