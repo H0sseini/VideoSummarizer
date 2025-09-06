@@ -72,7 +72,7 @@ async def read_current_settings():
             "frame": frame,
             "narrative": narrative
             }
-        print(settings["audio"]["audio_model"])
+        
         return settings
     
     except Exception as e:

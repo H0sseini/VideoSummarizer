@@ -103,6 +103,33 @@ def write_inputs_from_combined(settings: dict,
             if value is not None and value != "":
                 merged[key] = value
         return merged
+    
+    def convert_values(d):
+        """Convert numeric strings to int/float automatically."""
+        converted = {}
+        for k, v in d.items():
+               if isinstance(v, str):
+                   v = v.strip()
+                   if v == "":
+                       converted[k] = None
+                   else:
+                       # Try int first
+                       try:
+                           converted[k] = int(v)
+                           continue
+                       except ValueError:
+                           pass
+                       # Try float
+                       try:
+                           converted[k] = float(v)
+                           continue
+                       except ValueError:
+                           pass
+                       # Fallback: keep string
+                       converted[k] = v
+               else:
+                   converted[k] = v
+        return converted
 
     try:
         # Load defaults
@@ -116,6 +143,14 @@ def write_inputs_from_combined(settings: dict,
         video = merge_with_defaults(settings.get("video"), default_video)
         frame = merge_with_defaults(settings.get("frame"), default_frame)
         narrative = merge_with_defaults(settings.get("narrative"), default_narrative)
+
+        
+        # change numbers from strings to numbers
+        audio = convert_values(audio)
+        video = convert_values(video)
+        frame = convert_values(frame)
+        narrative = convert_values(narrative)
+
 
         # Save merged settings
         with open(os.path.join(path, 'AudioInputs.json'), 'w') as file:
