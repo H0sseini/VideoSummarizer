@@ -60,86 +60,44 @@ document.getElementById("summarizeForm").addEventListener("submit", async functi
 });
 
 document.getElementById("toggleSettings").addEventListener("click", async function () {
-    read_settings();
-	
-	const settingsDiv = document.getElementById("settingsSection");
-
+    const settingsDiv = document.getElementById("settingsSection");
     // Toggle visibility
     settingsDiv.style.display = settingsDiv.style.display === "none" ? "block" : "none";
-
-    // If now visible, fetch and populate settings
+    // If now visible, load and populate
     if (settingsDiv.style.display === "block") {
-        try {
-            const response = await fetch("/read_settings");
-            const settings = await response.json();
-
-            for (const [section, values] of Object.entries(settings)) {
-                for (const [key, val] of Object.entries(values)) {
-                    const inputElement = document.getElementById(`${section}_${key}`);
-                    if (inputElement) {
-                        inputElement.value = val;
-                    } else {
-                        console.warn(`⚠️ No input field found for: ${section}_${key}`);
-                    }
-                }
-            }
-        } catch (err) {
-            console.error("❌ Failed to load settings:", err);
-        }
+        await read_settings();
     }
 });
 
 
 document.getElementById("restoreDefaults").addEventListener("click", async function () {
     await fetch("/restore_defaults", { method: "POST" });
-    alert("🔄 Defaults restored!");
+    
 });
 
-document.getElementById("saveSettings").addEventListener("click", async function () {
-    const data = {
-        audio: {
-            language: document.getElementById("audio_language").value,
-            model_size: document.getElementById("audio_model_size").value
-        },
-        video: {
-            frame_interval: parseFloat(document.getElementById("video_frame_interval").value),
-            scene_threshold: parseFloat(document.getElementById("video_scene_threshold").value)
-        },
-        frame: {
-            use_clip: document.getElementById("frame_use_clip").checked
-        },
-        narrative: {
-            caption_threshold: parseFloat(document.getElementById("narrative_threshold").value)
-        }
-    };
 
-    await fetch("/modify_inputs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-    });
-
-    document.getElementById("settingsSection").style.display = "none";
-});
 
 async function saveSettings() {
-    const audioModel = document.getElementById("audio_model_box")?.value || "";
-	const audioModelSize = document.getElementById("audio_model_size")?.value || null;
-    const videoIntervalSec = document.getElementById("interval_sec")?.value || null;
-	const videoStability = document.getElementById("scene_stability_sec")?.value || null;
-	const videoThreshold = document.getElementById("video_diff_threshold")?.value || null;
-    const frameCLIPSetting = document.getElementById("clip_model_id")?.value || null;
-	const frameBLIPSetting = document.getElementById("blip_model_id")?.value || null;
-    const narrativeConfidence = document.getElementById("frame_confidence")?.value || null;
-	const narrativeModelID = document.getElementById("narrative_model_id")?.value || null;
-	const narrativeFPS = document.getElementById("video_fps")?.value || null;
-	const summaryMode = document.getElementById("video_summary_mode")?.value || null;
+    const audioModel = document.getElementById("audio_model_box")?.value || null;
+    const audioModelSize = document.getElementById("audio_model_size")?.value || null;
+
+    const videoIntervalSec = document.getElementById("video_interval_sec")?.value || null;
+    const videoStability = document.getElementById("video_scene_stability_sec")?.value || null;
+    const videoThreshold = document.getElementById("video_diff_threshold")?.value || null;
+
+    const frameCLIPSetting = document.getElementById("frame_clip_model_id")?.value || null;
+    const frameBLIPSetting = document.getElementById("frame_blip_model_id")?.value || null;
+
+    const narrativeConfidence = document.getElementById("narrative_confidence")?.value || null;
+    const narrativeModelID = document.getElementById("narrative_model_id")?.value || null;
+    const narrativeFPS = document.getElementById("video_fps")?.value || null;
+    const summaryMode = document.getElementById("video_summary_mode")?.value || null;
 
     const settings = {
-        audio: { audio_model: audioModel, model_size:  audioModelSize},
-        video: { interval_sec: videoIntervalSec, scene_stability_sec: videoStability, diff_threshold: videoThreshold},
+        audio: { audio_model: audioModel, model_size: audioModelSize },
+        video: { interval_sec: videoIntervalSec, scene_stability_sec: videoStability, diff_threshold: videoThreshold },
         frame: { clip_model_id: frameCLIPSetting, blip_model_id: frameBLIPSetting },
-        narrative: { confidence: narrativeConfidence, model_id: narrativeModelID, fps: narrativeFPS, summary_mode: summaryMode}
+        narrative: { confidence: narrativeConfidence, model_id: narrativeModelID, fps: narrativeFPS, summary_mode: summaryMode }
     };
 
     try {
@@ -150,20 +108,18 @@ async function saveSettings() {
         });
 
         const result = await response.json();
-
         if (result.status === "success") {
             alert("✅ Settings saved successfully!");
         } else {
             alert("⚠️ Failed to save settings: " + result.message);
         }
-
     } catch (err) {
         alert("❌ Error: " + err.message);
     }
-
-    // Optionally hide settings section
+	read_settings();
     document.getElementById("settingsSection").style.display = "none";
 }
+
 document.getElementById("restoreDefaults").addEventListener("click", async () => {
     if (!confirm("Are you sure you want to restore default settings? This will overwrite current settings.")) {
         return;
@@ -205,37 +161,36 @@ async function read_settings() {
         const response = await fetch("/read_settings");
         const result = await response.json();
 
-        if (result.status === "success") {
-            const settings = result.settings;
-
-            // Fill Audio settings
-			document.getElementById("audio_model_box").value = settings.audio?.audio_model || "";;
-			document.getElementById("audio_model_size").value = settings.audio?.model_size || "";
-			
-            // Fill Video settings
-            document.getElementById("video_interval_sec").value = settings.video?.interval_sec || "";
-			document.getElementById("video_scene_stability_sec").value = settings.video?.scene_stability_sec || "";
-			document.getElementById("video_diff_threshold").value = settings.video?.diff_threshold || "";
-          
-            // Fill Frame settings
-            document.getElementById("frame_clip_model_id").value = settings.frame?.clip_model_id || "";
-			document.getElementById("frame_blip_model_id").value = settings.frame?.blip_model_id || "";
-           
-            // Fill Narrative settings
-            document.getElementById("narrative_confidence").value = settings.narrative?.confidence || "";
-			document.getElementById("narrative_model_id").value = settings.narrative?.model_id || "";
-			document.getElementById("video_fps").value = settings.narrative?.fps || "";
-			document.getElementById("video_summary_mode").value  = settings.narrative?.summary_mode || "";
-   
+        if (result.error) {
+            console.error("⚠️ Failed to load settings:", result.error);
+            return; // Optionally clear fields or handle UI feedback here
         } else {
-            console.error("Failed to load settings:", result);
+            const MySettings = result; // Directly use result as settings
+
+            // Fill Audio
+            document.getElementById("audio_model_box").value = MySettings.audio?.audio_model || "";
+            document.getElementById("audio_model_size").value = MySettings.audio?.model_size || "";
+
+            // Fill Video
+            document.getElementById("video_interval_sec").value = MySettings.video?.interval_sec || "";
+            document.getElementById("video_scene_stability_sec").value = MySettings.video?.scene_stability_sec || "";
+            document.getElementById("video_diff_threshold").value = MySettings.video?.diff_threshold || "";
+
+            // Fill Frame
+            document.getElementById("frame_clip_model_id").value = MySettings.frame?.clip_model_id || "";
+            document.getElementById("frame_blip_model_id").value = MySettings.frame?.blip_model_id || "";
+
+            // Fill Narrative
+            document.getElementById("narrative_confidence").value = MySettings.narrative?.confidence || "";
+            document.getElementById("narrative_model_id").value = MySettings.narrative?.model_id || "";
+            document.getElementById("video_fps").value = MySettings.narrative?.fps || "";
+            document.getElementById("video_summary_mode").value = MySettings.narrative?.summary_mode || "";
         }
     } catch (err) {
-        console.error("Error fetching settings:", err);
+        console.error("❌ Error fetching settings:", err);
     }
 }
 
-document.addEventListener("DOMContentLoaded", read_settings);
 
 document.getElementById("copyFullBtn").addEventListener('click', function() {
                 navigator.clipboard.writeText(document.getElementById("fullNarrative").value).then(function() {

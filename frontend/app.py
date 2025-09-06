@@ -63,6 +63,7 @@ async def summarize(
     
 @app.get("/read_settings")
 async def read_current_settings():
+    
     try:
         audio, video, frame, narrative = load_defaults("./app/settings/")
         settings={
@@ -71,6 +72,7 @@ async def read_current_settings():
             "frame": frame,
             "narrative": narrative
             }
+        print(settings["audio"]["audio_model"])
         return settings
     
     except Exception as e:
@@ -97,6 +99,7 @@ async def write_inputs_endpoint(request: Request):
 async def restore_defaults_route():
     return restore_defaults()
 
+'''
 @app.get("/read_settings")
 async def read_settings_route():
     print("kir")
@@ -122,3 +125,5 @@ async def read_settings_route():
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error reading settings: {str(e)}")
+        
+        '''
