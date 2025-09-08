@@ -22,6 +22,7 @@ __pycache__/
 *.jpeg
 *.png
 *.wav
+!logo.png
 
 # Block logs or cache files
 *.log
